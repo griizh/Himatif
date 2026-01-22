@@ -1,113 +1,399 @@
 <!doctype html>
-<html>
+<html lang="id">
 <head>
   <meta charset="utf-8" />
-  <title>Absensi - Admin</title>
+  <title>Absensi HIMATIF - Admin</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    body { font-family: Arial, sans-serif; max-width: 1000px; margin: 2rem auto; padding: 1rem; }
-    input, button, select { padding: 0.5rem; margin: .3rem 0; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-    th, td { border: 1px solid #ddd; padding: .4rem; font-size: .9rem; }
-    .row { display:flex; gap: .5rem; align-items:center; flex-wrap:wrap; }
-    .col { flex:1; min-width:200px; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      animation: slideUp 0.5s ease-out;
+    }
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 2rem;
+    }
+    
+    .header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+    
+    .card h3 {
+      color: #667eea;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #667eea;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 0.85rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s;
+      margin: 0.5rem 0;
+    }
+    
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    button {
+      padding: 0.85rem 1.5rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin: 0.3rem;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+    }
+    
+    .btn-warning {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    
+    .btn-info {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    
+    .info-box {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 10px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .info-box.success {
+      border-color: #28a745;
+      background: #d4edda;
+    }
+    
+    .info-box.warning {
+      border-color: #ffc107;
+      background: #fff3cd;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    
+    th {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+    }
+    
+    td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    tr:hover {
+      background: #f8f9fa;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    
+    .badge-success {
+      background: #28a745;
+      color: white;
+    }
+    
+    .badge-danger {
+      background: #dc3545;
+      color: white;
+    }
+    
+    .user-info {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 15px;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    
+    .login-card {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    
+    label {
+      display: block;
+      color: #555;
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+      font-weight: 500;
+    }
+    
+    .code-display {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 15px;
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+      letter-spacing: 0.3rem;
+      margin: 1rem 0;
+    }
   </style>
 </head>
 <body>
-  <h2>Admin - Absensi</h2>
+  <div class="container">
+    <div class="header">
+      <h1>🎯 Admin Panel</h1>
+      <p>Sistem Manajemen Absensi HIMATIF</p>
+    </div>
 
-  <div id="auth">
-    <input id="login-username" placeholder="username" />
-    <input id="login-password" type="password" placeholder="password" />
-    <button id="btn-login">Login Admin</button>
-  </div>
-
-  <div id="panel" style="display:none;">
-    <p>Logged in as <span id="me-user"></span></p>
-
-    <div>
-      <h3>Set Campus</h3>
-      <p>1) Paste Google Maps link (contoh: https://www.google.com/maps/@-6.350000,107.300000,17z)</p>
-      <input id="maps-link" placeholder="Tempel link Google Maps di sini" />
-      <button id="btn-extract">Set Campus from Link</button>
-
-      <p>2) Or set manual coordinates:</p>
-      <div class="row">
-        <input id="manual-lat" class="col" placeholder="Latitude (contoh: -6.350000)" />
-        <input id="manual-lng" class="col" placeholder="Longitude (contoh: 107.300000)" />
-        <input id="manual-radius" class="col" placeholder="Radius (meter), mis. 200" />
+    <div id="auth" class="login-card">
+      <div class="card">
+        <h3>🔐 Login Admin</h3>
+        <label>Username</label>
+        <input id="login-username" placeholder="Masukkan username admin" />
+        <label>Password</label>
+        <input id="login-password" type="password" placeholder="Masukkan password" />
+        <button id="btn-login" style="width:100%; margin-top:1rem;">Masuk sebagai Admin</button>
       </div>
-      <button id="btn-manual-set">Set Campus Manual</button>
-
-      <p id="campus-info"></p>
     </div>
 
-    <div>
-      <h3>Generate kode</h3>
-      <label>Masa berlaku (menit):</label>
-      <input id="code-minutes" type="number" value="60" />
-      <button id="btn-gen">Generate kode</button>
-      <p id="gen-result"></p>
-    </div>
+    <div id="panel" style="display:none;">
+      <div class="user-info">
+        <h2>👨‍💼 Admin Dashboard</h2>
+        <p>Login sebagai: <strong id="me-user"></strong></p>
+      </div>
 
-    <div>
-      <h3>Export Absensi</h3>
-      <button id="btn-export-csv">Export CSV</button>
-      <button id="btn-export-pdf">Export PDF</button>
-    </div>
+      <div class="card">
+        <h3>🗺️ Pengaturan Lokasi Kampus</h3>
+        <div class="info-box">
+          <strong>📍 Lokasi Kampus Saat Ini:</strong>
+          <p id="campus-info">Memuat...</p>
+        </div>
+        
+        <h4 style="margin-top:1.5rem; color:#555;">Metode 1: Paste Link Google Maps</h4>
+        <p style="color:#666; margin:0.5rem 0;">Contoh: https://www.google.com/maps/@-6.350000,107.300000,17z</p>
+        <input id="maps-link" placeholder="Tempel link Google Maps di sini" />
+        <button id="btn-extract" class="btn-success">📍 Set Lokasi dari Link</button>
 
-    <div style="margin-top:1rem;">
-      <button id="btn-refresh">Refresh daftar absensi</button>
-      <button id="btn-logout">Logout</button>
-    </div>
+        <h4 style="margin-top:1.5rem; color:#555;">Metode 2: Input Manual</h4>
+        <div class="grid">
+          <div>
+            <label>Latitude</label>
+            <input id="manual-lat" placeholder="-6.350000" />
+          </div>
+          <div>
+            <label>Longitude</label>
+            <input id="manual-lng" placeholder="107.300000" />
+          </div>
+          <div>
+            <label>Radius (meter)</label>
+            <input id="manual-radius" placeholder="200" type="number" />
+          </div>
+        </div>
+        <button id="btn-manual-set" class="btn-success">💾 Simpan Koordinat Manual</button>
+      </div>
 
-    <h3>Absensi terakhir</h3>
-    <div id="att-list"></div>
+      <div class="card">
+        <h3>🔑 Generate Kode Absensi</h3>
+        <div class="grid">
+          <div>
+            <label>Masa Berlaku (Menit)</label>
+            <input id="code-minutes" type="number" value="60" min="1" />
+          </div>
+        </div>
+        <button id="btn-gen" class="btn-warning">🎲 Generate Kode Baru</button>
+        <div id="gen-result"></div>
+      </div>
+
+      <div class="card">
+        <h3>📊 Export Data Absensi</h3>
+        <div class="action-buttons">
+          <button id="btn-export-csv" class="btn-info">📄 Export CSV</button>
+          <button id="btn-export-pdf" class="btn-danger">📕 Export PDF</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+          <h3 style="margin:0; border:none; padding:0;">📋 Daftar Absensi Terbaru</h3>
+          <button id="btn-refresh" class="btn-info">🔄 Refresh</button>
+        </div>
+        <div id="att-list" style="overflow-x:auto;"></div>
+      </div>
+
+      <div class="card" style="text-align:center;">
+        <button id="btn-logout" class="btn-danger" style="width:auto;">🚪 Logout</button>
+      </div>
+    </div>
   </div>
 
 <script>
 const api = (path, opts={}) => fetch('/api' + path, opts).then(r => r.json());
 
 document.getElementById('btn-login').onclick = async () => {
-  const u = document.getElementById('login-username').value;
+  const u = document.getElementById('login-username').value.trim();
   const p = document.getElementById('login-password').value;
-  const r = await api('/login', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username:u,password:p})});
+  if (!u || !p) {
+    alert('Username dan password harus diisi!');
+    return;
+  }
+  const r = await api('/login', { 
+    method: 'POST', 
+    headers:{'Content-Type':'application/json'}, 
+    body: JSON.stringify({username:u,password:p})
+  });
   if (r.token) {
     localStorage.setItem('token', r.token);
     afterLogin();
   } else {
-    alert(JSON.stringify(r));
+    alert('Login gagal: ' + (r.error || 'Unknown error'));
   }
 };
 
 async function afterLogin(){
   const token = localStorage.getItem('token');
   if (!token) return;
-  const me = await fetch('/api/me', { headers: { Authorization: 'Bearer ' + token } }).then(r=>r.json());
-  document.getElementById('auth').style.display='none';
-  document.getElementById('panel').style.display='block';
-  document.getElementById('me-user').innerText = me.username;
-  loadCampus();
-  loadAttendances();
+  try {
+    const me = await fetch('/api/me', { 
+      headers: { Authorization: 'Bearer ' + token } 
+    }).then(r=>r.json());
+    
+    if (me.error || me.role !== 'admin') {
+      alert('Anda bukan admin!');
+      localStorage.removeItem('token');
+      return;
+    }
+    
+    document.getElementById('auth').style.display='none';
+    document.getElementById('panel').style.display='block';
+    document.getElementById('me-user').innerText = me.username;
+    loadCampus();
+    loadAttendances();
+  } catch(e) {
+    console.error(e);
+  }
 }
 
 document.getElementById('btn-extract').onclick = async () => {
   const link = document.getElementById('maps-link').value.trim();
+  if (!link) {
+    alert('Silakan masukkan link Google Maps!');
+    return;
+  }
+  
   const parsed = parseGoogleMapsLink(link);
   if (!parsed) {
     alert('Tidak dapat mengekstrak koordinat dari link. Coba gunakan link berbentuk /@lat,lng, atau yang mengandung !3dLAT!4dLNG.');
     return;
   }
+  
   const token = localStorage.getItem('token');
   const r = await fetch('/api/admin/campus', {
     method:'POST',
     headers: {'Content-Type':'application/json', 'Authorization':'Bearer ' + token},
     body: JSON.stringify({ lat: parsed.lat, lng: parsed.lng, radius_m: parsed.radius || 200 })
   }).then(r=>r.json());
-  if (r.error) alert(JSON.stringify(r));
-  else {
-    document.getElementById('campus-info').innerText = 'Campus set: ' + JSON.stringify(r);
+  
+  if (r.error) {
+    alert('Error: ' + r.error);
+  } else {
+    alert('✅ Lokasi kampus berhasil diupdate!');
     loadCampus();
+    document.getElementById('maps-link').value = '';
   }
 };
 
@@ -115,29 +401,36 @@ document.getElementById('btn-manual-set').onclick = async () => {
   const lat = parseFloat(document.getElementById('manual-lat').value);
   const lng = parseFloat(document.getElementById('manual-lng').value);
   const radius = parseFloat(document.getElementById('manual-radius').value || '200');
-  if (!isFinite(lat) || !isFinite(lng)) { alert('Lat & Lng harus angka'); return; }
+  
+  if (!isFinite(lat) || !isFinite(lng)) {
+    alert('Latitude dan Longitude harus berupa angka!');
+    return;
+  }
+  
   const token = localStorage.getItem('token');
   const r = await fetch('/api/admin/campus', {
     method:'POST',
     headers: {'Content-Type':'application/json', 'Authorization':'Bearer ' + token},
     body: JSON.stringify({ lat, lng, radius_m: radius })
   }).then(r=>r.json());
-  if (r.error) alert(JSON.stringify(r));
-  else {
-    document.getElementById('campus-info').innerText = 'Campus set: ' + JSON.stringify(r);
+  
+  if (r.error) {
+    alert('Error: ' + r.error);
+  } else {
+    alert('✅ Koordinat kampus berhasil disimpan!');
     loadCampus();
+    document.getElementById('manual-lat').value = '';
+    document.getElementById('manual-lng').value = '';
+    document.getElementById('manual-radius').value = '';
   }
 };
 
 function parseGoogleMapsLink(link) {
   if (!link) return null;
-  // pattern /@lat,lng,...
   const atMatch = link.match(/@(-?[0-9]+\.[0-9]+),(-?[0-9]+\.[0-9]+)/);
   if (atMatch) return { lat: parseFloat(atMatch[1]), lng: parseFloat(atMatch[2]) };
-  // pattern !3dLAT!4dLNG
   const exMatch = link.match(/!3d(-?[0-9]+\.[0-9]+)!4d(-?[0-9]+\.[0-9]+)/);
   if (exMatch) return { lat: parseFloat(exMatch[1]), lng: parseFloat(exMatch[2]) };
-  // fallback: try to find first two floats
   const floatMatch = link.match(/(-?[0-9]+\.[0-9]+).*?(-?[0-9]+\.[0-9]+)/);
   if (floatMatch) return { lat: parseFloat(floatMatch[1]), lng: parseFloat(floatMatch[2]) };
   return null;
@@ -147,53 +440,95 @@ document.getElementById('btn-gen').onclick = async () => {
   const minutes = parseInt(document.getElementById('code-minutes').value || '60', 10);
   const token = localStorage.getItem('token');
   const r = await fetch('/api/admin/generate-code', {
-    method:'POST', headers: {'Content-Type':'application/json', 'Authorization':'Bearer ' + token},
+    method:'POST',
+    headers: {'Content-Type':'application/json', 'Authorization':'Bearer ' + token},
     body: JSON.stringify({ minutes })
   }).then(r=>r.json());
-  document.getElementById('gen-result').innerText = JSON.stringify(r);
-  loadAttendances();
+  
+  if (r.error) {
+    alert('Error: ' + r.error);
+  } else {
+    document.getElementById('gen-result').innerHTML = `
+      <div class="code-display">${r.code}</div>
+      <div class="info-box success">
+        <strong>✅ Kode berhasil di-generate!</strong><br>
+        Berlaku hingga: ${new Date(r.expires_at).toLocaleString('id-ID')}
+      </div>
+    `;
+    loadAttendances();
+  }
 };
 
 document.getElementById('btn-refresh').onclick = loadAttendances;
+
 document.getElementById('btn-logout').onclick = () => {
-  localStorage.removeItem('token');
-  document.getElementById('auth').style.display='block';
-  document.getElementById('panel').style.display='none';
+  if (confirm('Yakin ingin logout?')) {
+    localStorage.removeItem('token');
+    document.getElementById('auth').style.display='block';
+    document.getElementById('panel').style.display='none';
+  }
 };
 
 async function loadAttendances(){
   const token = localStorage.getItem('token');
-  const rows = await fetch('/api/admin/attendances', { headers: { Authorization: 'Bearer ' + token } }).then(r=>r.json());
-  if (rows.error) { document.getElementById('att-list').innerText = JSON.stringify(rows); return; }
-  if (!Array.isArray(rows)) { document.getElementById('att-list').innerText = JSON.stringify(rows); return; }
-  let html = '<table><tr><th>#</th><th>User</th><th>Lat</th><th>Lng</th><th>Code</th><th>Inside</th><th>When</th></tr>';
+  const rows = await fetch('/api/admin/attendances', { 
+    headers: { Authorization: 'Bearer ' + token } 
+  }).then(r=>r.json());
+  
+  if (rows.error) {
+    document.getElementById('att-list').innerHTML = `<div class="info-box warning">Error: ${rows.error}</div>`;
+    return;
+  }
+  
+  if (!Array.isArray(rows) || rows.length === 0) {
+    document.getElementById('att-list').innerHTML = `<div class="info-box">Belum ada data absensi.</div>`;
+    return;
+  }
+  
+  let html = '<table><thead><tr><th>#</th><th>User</th><th>Latitude</th><th>Longitude</th><th>Kode</th><th>Status</th><th>Waktu</th></tr></thead><tbody>';
   rows.forEach(r => {
-    html += `<tr><td>${r.id}</td><td>${r.username||r.user_id}</td><td>${r.lat}</td><td>${r.lng}</td><td>${r.code_used||''}</td><td>${r.inside? 'YA':'TIDAK'}</td><td>${r.created_at}</td></tr>`;
+    const status = r.inside ? 
+      '<span class="badge badge-success">✓ DI LOKASI</span>' : 
+      '<span class="badge badge-danger">✗ LUAR LOKASI</span>';
+    html += `<tr>
+      <td>${r.id}</td>
+      <td><strong>${r.username||r.user_id}</strong></td>
+      <td>${r.lat.toFixed(6)}</td>
+      <td>${r.lng.toFixed(6)}</td>
+      <td>${r.code_used||'-'}</td>
+      <td>${status}</td>
+      <td>${new Date(r.created_at).toLocaleString('id-ID')}</td>
+    </tr>`;
   });
-  html += '</table>';
+  html += '</tbody></table>';
   document.getElementById('att-list').innerHTML = html;
 }
 
 async function loadCampus() {
   const r = await fetch('/api/campus').then(r=>r.json());
-  document.getElementById('campus-info').innerText = 'Campus current: ' + JSON.stringify(r);
+  if (r.error) {
+    document.getElementById('campus-info').innerHTML = `<span style="color:#dc3545;">Error: ${r.error}</span>`;
+  } else {
+    document.getElementById('campus-info').innerHTML = `
+      Lat: <strong>${r.lat}</strong>, Lng: <strong>${r.lng}</strong>, Radius: <strong>${r.radius_m}m</strong>
+    `;
+  }
 }
 
-document.getElementById('btn-export-csv').onclick = () => {
-  const token = localStorage.getItem('token');
-  window.location = '/api/admin/export?format=csv&auth_token=' + encodeURIComponent(token);
-  // The server expects Authorization header; but for simple download we trigger using fetch fallback below if needed.
-  // Fallback implemented to attach header and download programmatically:
-  setTimeout(() => exportWithAuth('csv'), 100);
-};
-document.getElementById('btn-export-pdf').onclick = () => {
-  setTimeout(() => exportWithAuth('pdf'), 100);
-};
+document.getElementById('btn-export-csv').onclick = () => exportWithAuth('csv');
+document.getElementById('btn-export-pdf').onclick = () => exportWithAuth('pdf');
 
 async function exportWithAuth(format) {
   const token = localStorage.getItem('token');
-  const res = await fetch('/api/admin/export?format=' + format, { headers: { Authorization: 'Bearer ' + token } });
-  if (!res.ok) { alert('Export failed'); return; }
+  const res = await fetch('/api/admin/export?format=' + format, { 
+    headers: { Authorization: 'Bearer ' + token } 
+  });
+  
+  if (!res.ok) {
+    alert('Export gagal!');
+    return;
+  }
+  
   const blob = await res.blob();
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -205,6 +540,8 @@ async function exportWithAuth(format) {
   URL.revokeObjectURL(url);
 }
 
+// Auto login if token exists
+afterLogin();
 </script>
 </body>
 </html>
