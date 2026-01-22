@@ -1,8 +1,24 @@
-# Simple Dockerfile for the app
 FROM node:18-alpine
+
 WORKDIR /app
-COPY package.json package-lock.json* ./
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
 RUN npm install --production
+
+# Copy application files
 COPY . .
+
+# Create data directory
+RUN mkdir -p /app/data
+
+# Initialize database
+RUN node db-init.js
+
+# Expose port
 EXPOSE 3000
-CMD ["node", "server.js"]
+
+# Start application
+CMD ["npm", "start"]
