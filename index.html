@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Absensi - User</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 720px; margin: 2rem auto; padding: 1rem; }
+    input, button { padding: 0.5rem; margin: .3rem 0; width: 100%; box-sizing: border-box; }
+    .small { width: auto; display:inline-block; }
+  </style>
+</head>
+<body>
+  <h2>Absensi - User</h2>
+
+  <div id="auth">
+    <h3>Register</h3>
+    <input id="reg-username" placeholder="username" />
+    <input id="reg-password" type="password" placeholder="password" />
+    <button id="btn-register">Register</button>
+
+    <h3>Login</h3>
+    <input id="login-username" placeholder="username" />
+    <input id="login-password" type="password" placeholder="password" />
+    <button id="btn-login">Login</button>
+  </div>
+
+  <div id="panel" style="display:none;">
+    <p>Selamat datang, <span id="me-user"></span> (<span id="me-role"></span>)</p>
+    <div>
+      <label>Code (optional):</label>
+      <input id="input-code" placeholder="Masukkan kode jika ada (6-digit)" />
+      <button id="btn-absen">Absen sekarang (gunakan lokasi Anda)</button>
+      <p id="absen-status"></p>
+      <button id="btn-logout">Logout</button>
+    </div>
+  </div>
+
+<script>
+const api = (path, opts={}) => fetch('/api' + path, opts).then(r => r.json());
+
+document.getElementById('btn-register').onclick = async () => {
+  const u = document.getElementById('reg-username').value;
+  const p = document.getElementById('reg-password').value;
+  const r = await api('/register', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username:u,password:p})});
+  alert(JSON.stringify(r));
+};
+
+document.getElementById('btn-login').onclick = async () => {
+  const u = document.getElementById('login-username').value;
+  const p = document.getElementById('login-password').value;
+  const r = await api('/login', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username:u,password:p})});
+  if (r.token) {
+    localStorage.setItem('token', r.token);
+    afterLogin();
+  } else {
+    alert(JSON.stringify(r));
+  }
+};
+
+async function afterLogin(){
+  const token = localStorage.getItem('token');
+  if (!token) return;
+  const me = await fetch('/api/me', { headers: { Authorization: 'Bearer ' + token } }).then(r=>r.json());
+  document.getElementById('auth').style.display='none';
+  document.getElementById('panel').style.display='block';
+  document.getElementById('me-user').innerText = me.username;
+  document.getElementById('me-role').innerText = me.role;
+}
+
+document.getElementById('btn-logout').onclick = () => {
+  localStorage.removeItem('token');
+  document.getElementById('auth').style.display='block';
+  document.getElementById('panel').style.display='none';
+};
+
+document.getElementById('btn-absen').onclick = async () => {
+  const status = document.getElementById('absen-status');
+  status.innerText = 'Mencari lokasi...';
+  if (!navigator.geolocation) {
+    status.innerText = 'Geolocation tidak didukung di browser ini.';
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    const code = document.getElementById('input-code').value || null;
+    const token = localStorage.getItem('token');
+    const res = await fetch('/api/attendance', {
+      method:'POST',
+      headers: {
+        'Content-Type':'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({ lat, lng, code })
+    }).then(r=>r.json());
+    if (res.error) status.innerText = 'Error: ' + res.error;
+    else status.innerText = res.message + (res.distance_m!==undefined ? (' (jarak ≈ ' + res.distance_m + ' m)') : '');
+  }, (err) => {
+    status.innerText = 'Gagal mendapatkan lokasi: ' + err.message;
+  }, { enableHighAccuracy: true });
+};
+
+afterLogin();
+</script>
+</body>
+</html>

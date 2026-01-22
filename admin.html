@@ -1,0 +1,210 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Absensi - Admin</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 1000px; margin: 2rem auto; padding: 1rem; }
+    input, button, select { padding: 0.5rem; margin: .3rem 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { border: 1px solid #ddd; padding: .4rem; font-size: .9rem; }
+    .row { display:flex; gap: .5rem; align-items:center; flex-wrap:wrap; }
+    .col { flex:1; min-width:200px; }
+  </style>
+</head>
+<body>
+  <h2>Admin - Absensi</h2>
+
+  <div id="auth">
+    <input id="login-username" placeholder="username" />
+    <input id="login-password" type="password" placeholder="password" />
+    <button id="btn-login">Login Admin</button>
+  </div>
+
+  <div id="panel" style="display:none;">
+    <p>Logged in as <span id="me-user"></span></p>
+
+    <div>
+      <h3>Set Campus</h3>
+      <p>1) Paste Google Maps link (contoh: https://www.google.com/maps/@-6.350000,107.300000,17z)</p>
+      <input id="maps-link" placeholder="Tempel link Google Maps di sini" />
+      <button id="btn-extract">Set Campus from Link</button>
+
+      <p>2) Or set manual coordinates:</p>
+      <div class="row">
+        <input id="manual-lat" class="col" placeholder="Latitude (contoh: -6.350000)" />
+        <input id="manual-lng" class="col" placeholder="Longitude (contoh: 107.300000)" />
+        <input id="manual-radius" class="col" placeholder="Radius (meter), mis. 200" />
+      </div>
+      <button id="btn-manual-set">Set Campus Manual</button>
+
+      <p id="campus-info"></p>
+    </div>
+
+    <div>
+      <h3>Generate kode</h3>
+      <label>Masa berlaku (menit):</label>
+      <input id="code-minutes" type="number" value="60" />
+      <button id="btn-gen">Generate kode</button>
+      <p id="gen-result"></p>
+    </div>
+
+    <div>
+      <h3>Export Absensi</h3>
+      <button id="btn-export-csv">Export CSV</button>
+      <button id="btn-export-pdf">Export PDF</button>
+    </div>
+
+    <div style="margin-top:1rem;">
+      <button id="btn-refresh">Refresh daftar absensi</button>
+      <button id="btn-logout">Logout</button>
+    </div>
+
+    <h3>Absensi terakhir</h3>
+    <div id="att-list"></div>
+  </div>
+
+<script>
+const api = (path, opts={}) => fetch('/api' + path, opts).then(r => r.json());
+
+document.getElementById('btn-login').onclick = async () => {
+  const u = document.getElementById('login-username').value;
+  const p = document.getElementById('login-password').value;
+  const r = await api('/login', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username:u,password:p})});
+  if (r.token) {
+    localStorage.setItem('token', r.token);
+    afterLogin();
+  } else {
+    alert(JSON.stringify(r));
+  }
+};
+
+async function afterLogin(){
+  const token = localStorage.getItem('token');
+  if (!token) return;
+  const me = await fetch('/api/me', { headers: { Authorization: 'Bearer ' + token } }).then(r=>r.json());
+  document.getElementById('auth').style.display='none';
+  document.getElementById('panel').style.display='block';
+  document.getElementById('me-user').innerText = me.username;
+  loadCampus();
+  loadAttendances();
+}
+
+document.getElementById('btn-extract').onclick = async () => {
+  const link = document.getElementById('maps-link').value.trim();
+  const parsed = parseGoogleMapsLink(link);
+  if (!parsed) {
+    alert('Tidak dapat mengekstrak koordinat dari link. Coba gunakan link berbentuk /@lat,lng, atau yang mengandung !3dLAT!4dLNG.');
+    return;
+  }
+  const token = localStorage.getItem('token');
+  const r = await fetch('/api/admin/campus', {
+    method:'POST',
+    headers: {'Content-Type':'application/json', 'Authorization':'Bearer ' + token},
+    body: JSON.stringify({ lat: parsed.lat, lng: parsed.lng, radius_m: parsed.radius || 200 })
+  }).then(r=>r.json());
+  if (r.error) alert(JSON.stringify(r));
+  else {
+    document.getElementById('campus-info').innerText = 'Campus set: ' + JSON.stringify(r);
+    loadCampus();
+  }
+};
+
+document.getElementById('btn-manual-set').onclick = async () => {
+  const lat = parseFloat(document.getElementById('manual-lat').value);
+  const lng = parseFloat(document.getElementById('manual-lng').value);
+  const radius = parseFloat(document.getElementById('manual-radius').value || '200');
+  if (!isFinite(lat) || !isFinite(lng)) { alert('Lat & Lng harus angka'); return; }
+  const token = localStorage.getItem('token');
+  const r = await fetch('/api/admin/campus', {
+    method:'POST',
+    headers: {'Content-Type':'application/json', 'Authorization':'Bearer ' + token},
+    body: JSON.stringify({ lat, lng, radius_m: radius })
+  }).then(r=>r.json());
+  if (r.error) alert(JSON.stringify(r));
+  else {
+    document.getElementById('campus-info').innerText = 'Campus set: ' + JSON.stringify(r);
+    loadCampus();
+  }
+};
+
+function parseGoogleMapsLink(link) {
+  if (!link) return null;
+  // pattern /@lat,lng,...
+  const atMatch = link.match(/@(-?[0-9]+\.[0-9]+),(-?[0-9]+\.[0-9]+)/);
+  if (atMatch) return { lat: parseFloat(atMatch[1]), lng: parseFloat(atMatch[2]) };
+  // pattern !3dLAT!4dLNG
+  const exMatch = link.match(/!3d(-?[0-9]+\.[0-9]+)!4d(-?[0-9]+\.[0-9]+)/);
+  if (exMatch) return { lat: parseFloat(exMatch[1]), lng: parseFloat(exMatch[2]) };
+  // fallback: try to find first two floats
+  const floatMatch = link.match(/(-?[0-9]+\.[0-9]+).*?(-?[0-9]+\.[0-9]+)/);
+  if (floatMatch) return { lat: parseFloat(floatMatch[1]), lng: parseFloat(floatMatch[2]) };
+  return null;
+}
+
+document.getElementById('btn-gen').onclick = async () => {
+  const minutes = parseInt(document.getElementById('code-minutes').value || '60', 10);
+  const token = localStorage.getItem('token');
+  const r = await fetch('/api/admin/generate-code', {
+    method:'POST', headers: {'Content-Type':'application/json', 'Authorization':'Bearer ' + token},
+    body: JSON.stringify({ minutes })
+  }).then(r=>r.json());
+  document.getElementById('gen-result').innerText = JSON.stringify(r);
+  loadAttendances();
+};
+
+document.getElementById('btn-refresh').onclick = loadAttendances;
+document.getElementById('btn-logout').onclick = () => {
+  localStorage.removeItem('token');
+  document.getElementById('auth').style.display='block';
+  document.getElementById('panel').style.display='none';
+};
+
+async function loadAttendances(){
+  const token = localStorage.getItem('token');
+  const rows = await fetch('/api/admin/attendances', { headers: { Authorization: 'Bearer ' + token } }).then(r=>r.json());
+  if (rows.error) { document.getElementById('att-list').innerText = JSON.stringify(rows); return; }
+  if (!Array.isArray(rows)) { document.getElementById('att-list').innerText = JSON.stringify(rows); return; }
+  let html = '<table><tr><th>#</th><th>User</th><th>Lat</th><th>Lng</th><th>Code</th><th>Inside</th><th>When</th></tr>';
+  rows.forEach(r => {
+    html += `<tr><td>${r.id}</td><td>${r.username||r.user_id}</td><td>${r.lat}</td><td>${r.lng}</td><td>${r.code_used||''}</td><td>${r.inside? 'YA':'TIDAK'}</td><td>${r.created_at}</td></tr>`;
+  });
+  html += '</table>';
+  document.getElementById('att-list').innerHTML = html;
+}
+
+async function loadCampus() {
+  const r = await fetch('/api/campus').then(r=>r.json());
+  document.getElementById('campus-info').innerText = 'Campus current: ' + JSON.stringify(r);
+}
+
+document.getElementById('btn-export-csv').onclick = () => {
+  const token = localStorage.getItem('token');
+  window.location = '/api/admin/export?format=csv&auth_token=' + encodeURIComponent(token);
+  // The server expects Authorization header; but for simple download we trigger using fetch fallback below if needed.
+  // Fallback implemented to attach header and download programmatically:
+  setTimeout(() => exportWithAuth('csv'), 100);
+};
+document.getElementById('btn-export-pdf').onclick = () => {
+  setTimeout(() => exportWithAuth('pdf'), 100);
+};
+
+async function exportWithAuth(format) {
+  const token = localStorage.getItem('token');
+  const res = await fetch('/api/admin/export?format=' + format, { headers: { Authorization: 'Bearer ' + token } });
+  if (!res.ok) { alert('Export failed'); return; }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = format === 'csv' ? 'attendances.csv' : 'attendances.pdf';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+</script>
+</body>
+</html>
