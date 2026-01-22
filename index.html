@@ -1,106 +1,404 @@
 <!doctype html>
-<html>
+<html lang="id">
 <head>
   <meta charset="utf-8" />
-  <title>Absensi - User</title>
+  <title>Absensi HIMATIF - User</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    body { font-family: Arial, sans-serif; max-width: 720px; margin: 2rem auto; padding: 1rem; }
-    input, button { padding: 0.5rem; margin: .3rem 0; width: 100%; box-sizing: border-box; }
-    .small { width: auto; display:inline-block; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      max-width: 500px;
+      width: 100%;
+      padding: 2.5rem;
+      animation: slideUp 0.5s ease-out;
+    }
+    
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .logo {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .logo h1 {
+      color: #667eea;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .logo p {
+      color: #666;
+      font-size: 0.9rem;
+    }
+    
+    .form-section {
+      margin-bottom: 2rem;
+    }
+    
+    .form-section h3 {
+      color: #333;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #667eea;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    label {
+      display: block;
+      color: #555;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    
+    input {
+      width: 100%;
+      padding: 0.85rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    button {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 0.5rem;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    
+    .btn-logout {
+      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      margin-top: 1.5rem;
+    }
+    
+    .status-box {
+      background: #f8f9fa;
+      border-left: 4px solid #667eea;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      display: none;
+    }
+    
+    .status-box.show {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .status-box.success {
+      background: #d4edda;
+      border-color: #28a745;
+      color: #155724;
+    }
+    
+    .status-box.error {
+      background: #f8d7da;
+      border-color: #dc3545;
+      color: #721c24;
+    }
+    
+    .status-box.info {
+      background: #d1ecf1;
+      border-color: #17a2b8;
+      color: #0c5460;
+    }
+    
+    .welcome-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 15px;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    
+    .welcome-card h2 {
+      margin-bottom: 0.5rem;
+    }
+    
+    .welcome-card .role {
+      background: rgba(255,255,255,0.2);
+      display: inline-block;
+      padding: 0.3rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+    }
+    
+    .location-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    
+    .divider {
+      text-align: center;
+      margin: 1.5rem 0;
+      position: relative;
+    }
+    
+    .divider::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 100%;
+      height: 1px;
+      background: #e0e0e0;
+    }
+    
+    .divider span {
+      background: white;
+      padding: 0 1rem;
+      position: relative;
+      color: #999;
+      font-size: 0.85rem;
+    }
   </style>
 </head>
 <body>
-  <h2>Absensi - User</h2>
+  <div class="container">
+    <div class="logo">
+      <h1>📍 HIMATIF Absensi</h1>
+      <p>Sistem Absensi Berbasis Lokasi</p>
+    </div>
 
-  <div id="auth">
-    <h3>Register</h3>
-    <input id="reg-username" placeholder="username" />
-    <input id="reg-password" type="password" placeholder="password" />
-    <button id="btn-register">Register</button>
+    <div id="auth">
+      <div class="form-section">
+        <h3>Daftar Akun Baru</h3>
+        <div class="form-group">
+          <label>Username</label>
+          <input id="reg-username" placeholder="Masukkan username" />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input id="reg-password" type="password" placeholder="Masukkan password" />
+        </div>
+        <button id="btn-register">Daftar</button>
+      </div>
 
-    <h3>Login</h3>
-    <input id="login-username" placeholder="username" />
-    <input id="login-password" type="password" placeholder="password" />
-    <button id="btn-login">Login</button>
-  </div>
+      <div class="divider"><span>ATAU</span></div>
 
-  <div id="panel" style="display:none;">
-    <p>Selamat datang, <span id="me-user"></span> (<span id="me-role"></span>)</p>
-    <div>
-      <label>Code (optional):</label>
-      <input id="input-code" placeholder="Masukkan kode jika ada (6-digit)" />
-      <button id="btn-absen">Absen sekarang (gunakan lokasi Anda)</button>
-      <p id="absen-status"></p>
-      <button id="btn-logout">Logout</button>
+      <div class="form-section">
+        <h3>Login</h3>
+        <div class="form-group">
+          <label>Username</label>
+          <input id="login-username" placeholder="Masukkan username" />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input id="login-password" type="password" placeholder="Masukkan password" />
+        </div>
+        <button id="btn-login">Masuk</button>
+      </div>
+    </div>
+
+    <div id="panel" style="display:none;">
+      <div class="welcome-card">
+        <h2>Selamat Datang!</h2>
+        <div>👤 <span id="me-user"></span></div>
+        <div class="role">🎯 <span id="me-role"></span></div>
+      </div>
+
+      <div class="form-section">
+        <div class="location-icon" style="text-align:center;">📱</div>
+        <div class="form-group">
+          <label>Kode Absensi (Opsional)</label>
+          <input id="input-code" placeholder="Masukkan kode 6-digit jika ada" maxlength="6" />
+        </div>
+        <button id="btn-absen">🚀 Absen Sekarang</button>
+        <div id="absen-status" class="status-box"></div>
+      </div>
+
+      <button id="btn-logout" class="btn-logout">🚪 Keluar</button>
     </div>
   </div>
 
 <script>
 const api = (path, opts={}) => fetch('/api' + path, opts).then(r => r.json());
 
+function showStatus(message, type = 'info') {
+  const status = document.getElementById('absen-status');
+  status.className = 'status-box show ' + type;
+  status.innerText = message;
+}
+
 document.getElementById('btn-register').onclick = async () => {
-  const u = document.getElementById('reg-username').value;
+  const u = document.getElementById('reg-username').value.trim();
   const p = document.getElementById('reg-password').value;
-  const r = await api('/register', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username:u,password:p})});
-  alert(JSON.stringify(r));
+  if (!u || !p) {
+    alert('Username dan password harus diisi!');
+    return;
+  }
+  const r = await api('/register', { 
+    method: 'POST', 
+    headers:{'Content-Type':'application/json'}, 
+    body: JSON.stringify({username:u,password:p})
+  });
+  if (r.error) {
+    alert('Error: ' + r.error);
+  } else {
+    alert('Registrasi berhasil! Silakan login.');
+    document.getElementById('reg-username').value = '';
+    document.getElementById('reg-password').value = '';
+  }
 };
 
 document.getElementById('btn-login').onclick = async () => {
-  const u = document.getElementById('login-username').value;
+  const u = document.getElementById('login-username').value.trim();
   const p = document.getElementById('login-password').value;
-  const r = await api('/login', { method: 'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({username:u,password:p})});
+  if (!u || !p) {
+    alert('Username dan password harus diisi!');
+    return;
+  }
+  const r = await api('/login', { 
+    method: 'POST', 
+    headers:{'Content-Type':'application/json'}, 
+    body: JSON.stringify({username:u,password:p})
+  });
   if (r.token) {
     localStorage.setItem('token', r.token);
     afterLogin();
   } else {
-    alert(JSON.stringify(r));
+    alert('Login gagal: ' + (r.error || 'Unknown error'));
   }
 };
 
 async function afterLogin(){
   const token = localStorage.getItem('token');
   if (!token) return;
-  const me = await fetch('/api/me', { headers: { Authorization: 'Bearer ' + token } }).then(r=>r.json());
-  document.getElementById('auth').style.display='none';
-  document.getElementById('panel').style.display='block';
-  document.getElementById('me-user').innerText = me.username;
-  document.getElementById('me-role').innerText = me.role;
+  try {
+    const me = await fetch('/api/me', { 
+      headers: { Authorization: 'Bearer ' + token } 
+    }).then(r=>r.json());
+    
+    if (me.error) {
+      localStorage.removeItem('token');
+      return;
+    }
+    
+    document.getElementById('auth').style.display='none';
+    document.getElementById('panel').style.display='block';
+    document.getElementById('me-user').innerText = me.username;
+    document.getElementById('me-role').innerText = me.role.toUpperCase();
+  } catch(e) {
+    console.error(e);
+  }
 }
 
 document.getElementById('btn-logout').onclick = () => {
   localStorage.removeItem('token');
   document.getElementById('auth').style.display='block';
   document.getElementById('panel').style.display='none';
+  document.getElementById('absen-status').className = 'status-box';
 };
 
 document.getElementById('btn-absen').onclick = async () => {
-  const status = document.getElementById('absen-status');
-  status.innerText = 'Mencari lokasi...';
+  showStatus('🔍 Mencari lokasi Anda...', 'info');
+  
   if (!navigator.geolocation) {
-    status.innerText = 'Geolocation tidak didukung di browser ini.';
+    showStatus('❌ Geolocation tidak didukung di browser ini.', 'error');
     return;
   }
+  
   navigator.geolocation.getCurrentPosition(async (pos) => {
     const lat = pos.coords.latitude;
     const lng = pos.coords.longitude;
-    const code = document.getElementById('input-code').value || null;
+    const code = document.getElementById('input-code').value.trim() || null;
     const token = localStorage.getItem('token');
-    const res = await fetch('/api/attendance', {
-      method:'POST',
-      headers: {
-        'Content-Type':'application/json',
-        'Authorization': 'Bearer ' + token
-      },
-      body: JSON.stringify({ lat, lng, code })
-    }).then(r=>r.json());
-    if (res.error) status.innerText = 'Error: ' + res.error;
-    else status.innerText = res.message + (res.distance_m!==undefined ? (' (jarak ≈ ' + res.distance_m + ' m)') : '');
+    
+    showStatus('📡 Mengirim data absensi...', 'info');
+    
+    try {
+      const res = await fetch('/api/attendance', {
+        method:'POST',
+        headers: {
+          'Content-Type':'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ lat, lng, code })
+      }).then(r=>r.json());
+      
+      if (res.error) {
+        showStatus('❌ Error: ' + res.error, 'error');
+      } else {
+        let msg = '✅ ' + res.message;
+        if (res.distance_m !== undefined) {
+          msg += ' (Jarak ≈ ' + res.distance_m + ' m)';
+        }
+        showStatus(msg, 'success');
+        document.getElementById('input-code').value = '';
+      }
+    } catch(e) {
+      showStatus('❌ Gagal mengirim absensi: ' + e.message, 'error');
+    }
   }, (err) => {
-    status.innerText = 'Gagal mendapatkan lokasi: ' + err.message;
+    showStatus('❌ Gagal mendapatkan lokasi: ' + err.message, 'error');
   }, { enableHighAccuracy: true });
 };
 
+// Auto login if token exists
 afterLogin();
 </script>
 </body>
